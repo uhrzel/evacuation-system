@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <link rel="icon" type="image/svg+xml" href="images/icon.png" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+      <title>Evacuation Management System</title>
+      <meta name="keywords" content="">
+      <meta name="description" content="">
+      <meta name="author" content="">
+      <link rel="stylesheet" href="css/bootstrap.min.css">
+      <link rel="stylesheet" href="css/style.css">
+      <link rel="stylesheet" href="css/responsive.css">
+      <link rel="icon" href="images/fevicon.png" type="image/gif" />
+      <link rel="stylesheet" href="css/jquery.mCustomScrollbar.min.css">
+      <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
+   </head>
+     <style>
+         #searchResults {
+            margin-top: 20px;
+         }
+         #searchResults div {
+            background-color: #f1f1f1;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+         }
+         #searchResults div:hover {
+            background-color: #e1e1e1;
+         }
+       .searchArea {
+            width: 300px;
+            margin: 20px auto;
+         }
+         .searchArea .searchBar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+         }
+         .searchArea .searchBar input {
+            width: 85%;
+            padding: 10px;
+            border: none;
+            outline: none;
+         }
+         .searchArea .searchBar button {
+            width: 15%;
+            padding: 10px;
+            border: none;
+            background: #ccc;
+            cursor: pointer;
+         }
+      </style>
+   <body class="main-layout inner_header blog_page">
+      <!-- loader  -->
+      <div class="loader_bg">
+         <div class="loader"><img src="images/loading.gif" alt="#" /></div>
+      </div>
+      <!-- end loader -->
+      <header>
+         <div class="header">
+            <div class="container">
+               <div class="row">
+                  <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col logo_section">
+                     <div class="full">
+                        <div class="center-desk">
+                           <div class="logo">
+                              <a href="about.html">Evacuation Management System</a>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7">
+                     <nav class="navigation navbar navbar-expand-md navbar-dark ">
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample04" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarsExample04">
+                           <ul class="navbar-nav mr-auto">
+                                 <a class="nav-link" href="index.html">Home</a>
+                              </li>
+                              <li class="nav-item active">
+                                 <a class="nav-link" href="guidelines.html">Evacuation List</a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link" href="about.html">About</a>
+                                
+                             </li>
+                           </ul>
+                        </div>
+                     </nav>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </header>
+      <div class="yellow_darkbg">
+         <div class="container">
+            <div class="row">
+               <div class="col-md-12">
+                  <div class="titlepage">
+                     <h2>Evacuation List</h2  >
+               </div>
+            </div>
+         </div>
+      </div>
+      </div>
+   
+        <div class="searchArea">
+         <input placeholder="Search" type="search" id="input">
+         <button id="searchButton">
+            <i class="fa fa-search"></i>
+         </button>
+         <div id="searchResults"></div>
+      </div>
+
+  
+        <script>
+
+    let evacuationList = [
+   
+        { name: "San Isidro Evacuation", description: "Sitio Tanag Covered Court"},
+          { name: "Item 1", description: "Description 1"},
+        { name: "Item 2", description: "Description 2"},
+        { name: "Item 3", description: "Description 3"},
+        // add more items as needed...
+   
+    ];
+
+    const searchInput = document.querySelector('#input');
+    const searchResults = document.querySelector('#searchResults');
+
+    // The search function
+     function search(keyword) {
+            let results = evacuationList.filter(item =>
+                item.name.toLowerCase().includes(keyword.toLowerCase()) ||
+                item.description.toLowerCase().includes(keyword.toLowerCase())
+            );
+
+ 
+        searchResults.innerHTML = '';
+
+   
+        results.forEach(item => {
+            let div = document.createElement('div');
+            // Display only the description
+            div.textContent = item.description;
+            searchResults.appendChild(div);
+        });
+    }
+
+
+    searchInput.addEventListener('keyup', (event) => {
+        search(event.target.value);
+    });
+
+    search('');
+</script>
+
+
+    </script>
+      <footer>
+         
+      </footer>
+      <script src="js/jquery.min.js"></script>
+      <script src="js/popper.min.js"></script>
+      <script src="js/bootstrap.bundle.min.js"></script>
+      <script src="js/jquery-3.0.0.min.js"></script>
+      <script src="js/jquery.mCustomScrollbar.concat.min.js"></script>
+      <script src="js/custom.js"></script>
+      
+   </body>
+</html>
+
