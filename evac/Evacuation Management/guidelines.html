@@ -215,7 +215,7 @@
         // Initialize the data if localStorage is empty
         evacuationList = [
             { id: 1, name: "Baranggay San Isidro", description: "Sitio Tanag Covered Court" },
-            { id: 2, name: "Baranggay Pagalungan", description: "Pagalungan Covered Court" },
+            { id: 2, name: "Baranggay Pagalunagn", description: "Pagalungan Covered Court" },
             { id: 3, name: "Baranggay Saravia", description: "Saravia Baranggay Hall" },
             { id: 4, name: "Baranggay Silway 8", description: "Silway 8 Covered Court" },
             // add more items as needed...
@@ -309,7 +309,9 @@
             }
         }
     }
-function viewRow(itemId, row) {
+
+
+function viewRow(itemId) {
   // Find the item in the evacuationList based on the itemId
   const item = evacuationList.find((item) => item.id === itemId);
   if (item) {
@@ -348,65 +350,71 @@ function viewRow(itemId, row) {
 }
 
 
-    function addItem() {
-        const name = nameInput.value.trim();
-        const description = descriptionInput.value.trim();
-        if (name && description) {
-            const newItem = {
-                id: Date.now(),
-                name: name,
-                description: description
-            };
-            evacuationList.push(newItem);
-            localStorage.setItem('evacuationList', JSON.stringify(evacuationList));
-            const tableRow = document.createElement('tr');
+function addItem() {
+    const name = nameInput.value.trim();
+    const description = descriptionInput.value.trim();
+    if (name && description) {
+        const newItem = {
+            id: Date.now(),
+            name: name,
+            description: description
+        };
+        evacuationList.push(newItem);
+        localStorage.setItem('evacuationList', JSON.stringify(evacuationList));
+        const tableRow = document.createElement('tr');
 
-            const nameCell = document.createElement('td');
-            nameCell.textContent = newItem.name;
+        const nameCell = document.createElement('td');
+        nameCell.textContent = newItem.name;
 
-            const descriptionCell = document.createElement('td');
-            descriptionCell.textContent = newItem.description;
+        const descriptionCell = document.createElement('td');
+        descriptionCell.textContent = newItem.description;
 
-            const actionCell = document.createElement('td');
-            const actionButtons = document.createElement('div');
-            actionButtons.classList.add('actionButtons');
+        const actionCell = document.createElement('td');
+        const actionButtons = document.createElement('div');
+        actionButtons.classList.add('actionButtons');
 
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete';
-            deleteButton.classList.add('deleteButton');
-            deleteButton.addEventListener('click', () => {
-                deleteRow(newItem.id, tableRow);
-            });
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.classList.add('deleteButton');
+        deleteButton.addEventListener('click', () => {
+            deleteRow(newItem.id, tableRow);
+        });
 
-            const updateButton = document.createElement('button');
-            updateButton.textContent = 'Update';
-            updateButton.classList.add('updateButton');
-            updateButton.addEventListener('click', () => {
-                updateRow(newItem.id, tableRow);
-            });
-              const viewButton = document.createElement('button');
-            viewButton.textContent = 'Location';
-            viewButton.classList.add('viewButton');
-            viewButton.addEventListener('click', () => {
-                viewRow(newItem.id, tableRow);
-            });
+        const updateButton = document.createElement('button');
+        updateButton.textContent = 'Update';
+        updateButton.classList.add('updateButton');
+        updateButton.addEventListener('click', () => {
+            updateRow(newItem.id, tableRow);
+        });
 
-            actionButtons.appendChild(deleteButton);
-            actionButtons.appendChild(updateButton);
-            actionCell.appendChild(actionButtons);
+        const viewButton = document.createElement('button');
+        viewButton.textContent = 'Location';
+        viewButton.classList.add('viewButton');
+        viewButton.addEventListener('click', () => {
+            viewRow(newItem.id);
+        });
 
-            tableRow.appendChild(nameCell);
-            tableRow.appendChild(descriptionCell);
-            tableRow.appendChild(actionCell);
+        actionButtons.appendChild(deleteButton);
+        actionButtons.appendChild(updateButton);
+        actionButtons.appendChild(viewButton);
+        actionCell.appendChild(actionButtons);
 
-            // Append the new item at the beginning of the searchResults
-            searchResults.insertBefore(tableRow, searchResults.firstChild);
+        tableRow.appendChild(nameCell);
+        tableRow.appendChild(descriptionCell);
+        tableRow.appendChild(actionCell);
 
-            // Clear the input fields
-            nameInput.value = '';
-            descriptionInput.value = '';
-        }
+        // Append the new item at the beginning of the searchResults
+        searchResults.insertBefore(tableRow, searchResults.firstChild);
+
+        // Clear the input fields
+        nameInput.value = '';
+        descriptionInput.value = '';
+
+        // Update the searchResults to display the "Location" button immediately
+        search(nameInput.value);
     }
+}
+
 
     searchInput.addEventListener('keyup', (event) => {
         search(event.target.value);
