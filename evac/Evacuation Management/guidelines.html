@@ -18,44 +18,116 @@
       <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
    </head>
-     <style>
-         #searchResults {
-            margin-top: 20px;
-         }
-         #searchResults div {
-            background-color: #f1f1f1;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 5px;
-         }
-         #searchResults div:hover {
-            background-color: #e1e1e1;
-         }
-       .searchArea {
-            width: 300px;
-            margin: 20px auto;
-         }
-         .searchArea .searchBar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-         }
-         .searchArea .searchBar input {
-            width: 85%;
-            padding: 10px;
-            border: none;
-            outline: none;
-         }
-         .searchArea .searchBar button {
-            width: 15%;
-            padding: 10px;
-            border: none;
-            background: #ccc;
-            cursor: pointer;
-         }
-      </style>
+<style>
+    #searchResults {
+        margin-top: 20px;
+        border-collapse: collapse;
+        max-width: 500px; /* Set the desired maximum width */
+        width: 100%;
+    }
+
+    #searchResults th,
+    #searchResults td {
+        border: 1px solid #ccc;
+        padding: 6px;
+    }
+
+    #searchResults th {
+        background-color: #f1f1f1;
+        font-weight: bold;
+        text-align: left;
+    }
+
+    #searchResults tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    #searchResults tr:hover {
+        background-color: #e1e1e1;
+    }
+
+    .actionButtons {
+        display: flex;
+        align-items: center;
+    }
+
+    .actionButtons button {
+        margin-right: 5px;
+        padding: 3px 6px;
+        cursor: pointer;
+    }
+
+    .updateButton {
+        background-color: green;
+        color: white;
+    }
+
+    .deleteButton {
+        background-color: red;
+        color: white;
+    }
+    .viewButton{
+      background-color: blue;
+      color: white;
+    }
+
+    .searchArea {
+        width: 300px;
+        margin-top: 20px;
+    }
+
+    .searchArea .searchBar {
+        display: flex;
+        justify-content: space-between;
+        align-items: left;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .searchArea .searchBar input {
+        width: 85%;
+        padding: 10px;
+        border: none;
+        outline: none;
+    }
+
+    .searchArea .searchBar button {
+        width: 15%;
+        padding: 10px;
+        border: none;
+        background: #ccc;
+        cursor: pointer;
+    }
+  .modal {
+  display: none; /* Hide the modal by default */
+  position: fixed; /* Position the modal */
+  z-index: 1; /* Set the z-index to ensure it appears above other elements */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto; /* Enable scrolling if needed */
+  background-color: rgba(0, 0, 0, 0.4); /* Add a semi-transparent background */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: auto; /* Center the modal vertically */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Adjust the width as desired */
+  max-width: 600px; /* Limit the maximum width */
+}
+
+#mapsContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px; /* Set the desired height for the maps container */
+}
+
+</style>
+
    <body class="main-layout inner_header blog_page">
       <!-- loader  -->
       <div class="loader_bg">
@@ -110,63 +182,242 @@
          </div>
       </div>
       </div>
-   
-        <div class="searchArea">
-         <input placeholder="Search" type="search" id="input">
-         <button id="searchButton">
-            <i class="fa fa-search"></i>
-         </button>
-         <div id="searchResults"></div>
-      </div>
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <div id="mapsContainer"></div>
+  </div>
+</div>
 
-  
-        <script>
+   
+<div class="searchArea">
+    <input placeholder="Search" type="search" id="input">
+    <button id="searchButton">
+        <i class="fa fa-search"></i>
+    </button>
+</div>
+<br>
+<div>
+    <input type="text" id="nameInput" placeholder="Baranggay">
+    <input type="text" id="descriptionInput" placeholder="Evactuation Center">
+    <button id="addButton">Add</button>
+</div>
 
-    let evacuationList = [
-   
-        { name: "San Isidro Evacuation", description: "Sitio Tanag Covered Court"},
-          { name: "Item 1", description: "Description 1"},
-        { name: "Item 2", description: "Description 2"},
-        { name: "Item 3", description: "Description 3"},
-        // add more items as needed...
-   
-    ];
+<table id="searchResults"></table>
+
+<script>
+    let evacuationList = [];
+
+    // Retrieve data from localStorage if available
+    if (localStorage.getItem('evacuationList')) {
+        evacuationList = JSON.parse(localStorage.getItem('evacuationList'));
+    } else {
+        // Initialize the data if localStorage is empty
+        evacuationList = [
+            { id: 1, name: "Baranggay San Isidro", description: "Sitio Tanag Covered Court" },
+            { id: 2, name: "Baranggay Pagalungan", description: "Pagalungan Covered Court" },
+            { id: 3, name: "Baranggay Saravia", description: "Saravia Baranggay Hall" },
+            { id: 4, name: "Baranggay Silway 8", description: "Silway 8 Covered Court" },
+            // add more items as needed...
+        ];
+        // Save the initial data to localStorage
+        localStorage.setItem('evacuationList', JSON.stringify(evacuationList));
+    }
 
     const searchInput = document.querySelector('#input');
     const searchResults = document.querySelector('#searchResults');
+    const addButton = document.querySelector('#addButton');
+    const nameInput = document.querySelector('#nameInput');
+    const descriptionInput = document.querySelector('#descriptionInput');
 
     // The search function
-     function search(keyword) {
-            let results = evacuationList.filter(item =>
-                item.name.toLowerCase().includes(keyword.toLowerCase()) ||
-                item.description.toLowerCase().includes(keyword.toLowerCase())
-            );
+    function search(keyword) {
+        let results = evacuationList.filter(item =>
+            item.name.toLowerCase().includes(keyword.toLowerCase()) ||
+            item.description.toLowerCase().includes(keyword.toLowerCase())
+        );
 
- 
         searchResults.innerHTML = '';
 
-   
         results.forEach(item => {
-            let div = document.createElement('div');
-            // Display only the description
-            div.textContent = item.description;
-            searchResults.appendChild(div);
+            let tableRow = document.createElement('tr');
+
+            let nameCell = document.createElement('td');
+            nameCell.textContent = item.name;
+
+            let descriptionCell = document.createElement('td');
+            descriptionCell.textContent = item.description;
+
+            let actionCell = document.createElement('td');
+            let actionButtons = document.createElement('div');
+            actionButtons.classList.add('actionButtons');
+
+            let deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.classList.add('deleteButton');
+            deleteButton.addEventListener('click', () => {
+                deleteRow(item.id, tableRow);
+            });
+
+            let updateButton = document.createElement('button');
+            updateButton.textContent = 'Update';
+            updateButton.classList.add('updateButton');
+            updateButton.addEventListener('click', () => {
+                updateRow(item.id, tableRow);
+            });
+             let viewButton = document.createElement('button');
+            viewButton.textContent = 'Location';
+            viewButton.classList.add('viewButton');
+            viewButton.addEventListener('click', () => {
+                viewRow(item.id, tableRow);
+            });
+
+            actionButtons.appendChild(deleteButton);
+            actionButtons.appendChild(updateButton);
+            actionButtons.appendChild(viewButton);
+            actionCell.appendChild(actionButtons);
+
+            tableRow.appendChild(nameCell);
+            tableRow.appendChild(descriptionCell);
+            tableRow.appendChild(actionCell);
+
+            searchResults.appendChild(tableRow);
         });
     }
 
+    function deleteRow(itemId, row) {
+        evacuationList = evacuationList.filter(item => item.id !== itemId);
+        row.remove();
+        // Update localStorage after deletion
+        localStorage.setItem('evacuationList', JSON.stringify(evacuationList));
+    }
+
+    function updateRow(itemId, row) {
+        // Implement your update logic here
+        console.log("Update button clicked for row:", row);
+        const updatedName = prompt("Enter updated name:");
+        const updatedDescription = prompt("Enter updated description:");
+        if (updatedName && updatedDescription) {
+            const updatedItem = evacuationList.find(item => item.id === itemId);
+            if (updatedItem) {
+                updatedItem.name = updatedName;
+                updatedItem.description = updatedDescription;
+                row.querySelector('td:nth-child(1)').textContent = updatedName;
+                row.querySelector('td:nth-child(2)').textContent = updatedDescription;
+                // Update localStorage after modification
+                localStorage.setItem('evacuationList', JSON.stringify(evacuationList));
+            }
+        }
+    }
+function viewRow(itemId, row) {
+  // Find the item in the evacuationList based on the itemId
+  const item = evacuationList.find((item) => item.id === itemId);
+  if (item) {
+    // Show the modal
+    const modal = document.getElementById('modal');
+    const modalContent = document.querySelector('.modal-content');
+    modal.style.display = 'block';
+
+    // Create an iframe element for the maps
+    const mapsFrame = document.createElement('iframe');
+    mapsFrame.src = `https://maps.google.com/maps?q=${encodeURIComponent(
+      item.description
+    )}&output=embed`;
+    mapsFrame.style.width = '100%';
+    mapsFrame.style.height = '100%';
+    mapsFrame.style.border = '0';
+
+    // Clear the previous content and append the maps iframe to the modal content
+    const mapsContainer = document.getElementById('mapsContainer');
+    mapsContainer.innerHTML = '';
+    mapsContainer.appendChild(mapsFrame);
+
+    // Close the modal when the close button is clicked
+    const closeButton = document.querySelector('.close');
+    closeButton.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+
+    // Close the modal when the user clicks outside the modal content
+    window.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+  }
+}
+
+
+    function addItem() {
+        const name = nameInput.value.trim();
+        const description = descriptionInput.value.trim();
+        if (name && description) {
+            const newItem = {
+                id: Date.now(),
+                name: name,
+                description: description
+            };
+            evacuationList.push(newItem);
+            localStorage.setItem('evacuationList', JSON.stringify(evacuationList));
+            const tableRow = document.createElement('tr');
+
+            const nameCell = document.createElement('td');
+            nameCell.textContent = newItem.name;
+
+            const descriptionCell = document.createElement('td');
+            descriptionCell.textContent = newItem.description;
+
+            const actionCell = document.createElement('td');
+            const actionButtons = document.createElement('div');
+            actionButtons.classList.add('actionButtons');
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.classList.add('deleteButton');
+            deleteButton.addEventListener('click', () => {
+                deleteRow(newItem.id, tableRow);
+            });
+
+            const updateButton = document.createElement('button');
+            updateButton.textContent = 'Update';
+            updateButton.classList.add('updateButton');
+            updateButton.addEventListener('click', () => {
+                updateRow(newItem.id, tableRow);
+            });
+              const viewButton = document.createElement('button');
+            viewButton.textContent = 'Location';
+            viewButton.classList.add('viewButton');
+            viewButton.addEventListener('click', () => {
+                viewRow(newItem.id, tableRow);
+            });
+
+            actionButtons.appendChild(deleteButton);
+            actionButtons.appendChild(updateButton);
+            actionCell.appendChild(actionButtons);
+
+            tableRow.appendChild(nameCell);
+            tableRow.appendChild(descriptionCell);
+            tableRow.appendChild(actionCell);
+
+            // Append the new item at the beginning of the searchResults
+            searchResults.insertBefore(tableRow, searchResults.firstChild);
+
+            // Clear the input fields
+            nameInput.value = '';
+            descriptionInput.value = '';
+        }
+    }
 
     searchInput.addEventListener('keyup', (event) => {
         search(event.target.value);
     });
 
+    addButton.addEventListener('click', addItem);
+
     search('');
 </script>
 
 
-    </script>
-      <footer>
-         
-      </footer>
       <script src="js/jquery.min.js"></script>
       <script src="js/popper.min.js"></script>
       <script src="js/bootstrap.bundle.min.js"></script>
